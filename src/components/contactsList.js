@@ -3,25 +3,55 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  ScrollView,
+  Image,
 } from 'react-native';
 
-export default class Topbar extends Component {
+export default class ContactsList extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      contacts: {},
+    }
+  }
+
+  componentDidMount() {
+
+    var starCountRef = firebase.database().ref('contacts');
+    starCountRef.on('value', snapshot => {
+      var contactsList = snapshot.val();
+      var lists = [];
+      for(var contact in contactsList) {
+        var obj = {};
+        obj.name = contact;
+        obj.address = contactsList[contact].address;
+        obj.number = contactsList[contact].number;
+        lists.push(obj)
+      }
+      this.setState({contacts: lists})
+
+
+      console.log("!!: ", contactsList);
+      console.log("123: ", this.state.contacts);
+    });
+    
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}> Contacts </Text>
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#d6d6c2',
-    height: 40,
+    backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 19,
@@ -29,3 +59,8 @@ const styles = StyleSheet.create({
     color: 'black'
   }
 });
+
+
+        
+
+        

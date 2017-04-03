@@ -6,7 +6,9 @@ import {
   Text,
   View
 } from 'react-native';
-import Topbar from './components/topbar.js';
+import ListItem from './components/listItem';
+import {Scene, Router} from 'react-native-router-flux';
+
 import * as firebase from "firebase";
 
 const APIKEY = "AIzaSyB-gqqdDosrWdWwPNPUpEkX1eL3ddM_PEM";
@@ -23,12 +25,13 @@ const FIREBASECONFIG = {
 
 firebase.initializeApp(FIREBASECONFIG);
 
-export default class Tilr_Contacts extends Component {
+
+export default class Contacts extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      contacts: {},
+      contacts: [],
     }
   }
 
@@ -37,7 +40,15 @@ export default class Tilr_Contacts extends Component {
     var starCountRef = firebase.database().ref('contacts');
     starCountRef.on('value', snapshot => {
       var contactsList = snapshot.val();
-      this.setState({contacts: contactsList})
+      var lists = [];
+      for(var contact in contactsList) {
+        var obj = {};
+        obj.name = contact;
+        obj.address = contactsList[contact].address;
+        obj.number = contactsList[contact].number;
+        lists.push(obj)
+      }
+      this.setState({contacts: lists})
 
 
       console.log("!!: ", contactsList);
@@ -46,22 +57,35 @@ export default class Tilr_Contacts extends Component {
     
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log(nextProps, nextState)
-  }
-
   render() {
+    if(this.state.contacts.length !== 0) {
+      return (
+        <View style={styles.container}>
+          {this.state.contacts.map((contact, i) => {
+            var avatar = require('./images/logo.png');
+            return (
+              <ListItem
+                key={i}
+                name={contact.name}
+                number={contact.number}
+                avatarSource={avatar}/>
+            )
+          })}
+          
+        </View>
+      );
+    }
+
     return (
-      <View style={styles.container}>
-        <Topbar/>
-      </View>
-    );
+      <Text> Loading ... </Text>
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 55,
     backgroundColor: '#F5FCFF',
   },
 });
