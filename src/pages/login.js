@@ -67,8 +67,8 @@ export default class Login extends Component {
 
     } catch(error) {
       console.log("error: ", error);
-      var errorCode = error.code;
-      var errorMessage = error.message;
+      let errorCode = error.code;
+      let errorMessage = error.message;
       this.setState({error: errorMessage})
       console.log("state: ", this.state.error)
     }

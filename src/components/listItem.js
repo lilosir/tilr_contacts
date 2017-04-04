@@ -5,6 +5,7 @@ import {
   Text,
   View,
   ScrollView,
+  TouchableOpacity ,
   Image,
 } from 'react-native';
 import {Icon} from 'react-native-material-design';
@@ -22,9 +23,13 @@ export default class ListItem extends Component {
       		<Text style={styles.name}>{this.props.name}</Text>
       		<Text>{this.props.number}</Text>
       	</View>
-      	<View style={styles.edit}>
-      		<Icon name={"edit"} color="#bbb" size={20}/>
-      	</View>
+      	<TouchableOpacity  
+          style={styles.edit}
+          onPress={this.props.onPress}>
+          <View>
+        		<Icon name={"edit"} color="#bbb" size={20}/>
+          </View>
+      	</TouchableOpacity>
       </View>
     )
   }
