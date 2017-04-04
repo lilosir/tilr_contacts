@@ -10,8 +10,12 @@ import {
   Text,
 } from 'react-native';
 import {Scene, Router} from 'react-native-router-flux';
-import Contacts from './src/contacts';
-import Login from './src/components/login';
+import Contacts from './src/pages/contacts';
+import Login from './src/pages/login';
+import * as firebase from "firebase";
+import firbaseConfig from './public/credential';
+
+firebase.initializeApp(firbaseConfig);
 
 export default class Tilr_Contacts extends Component {
 	render() {
@@ -20,12 +24,12 @@ export default class Tilr_Contacts extends Component {
 				navigationBarStyle={styles.naviBar}
 				titleStyle={styles.title}>
 	      <Scene key="root">
-	        <Scene key="login" component={Login} title="Login"/>
+        	<Scene key="login" component={Login} title="Login"/>
 	        <Scene 
 	        	key="contacts" 
 	        	component={Contacts} 
 	        	title="Contacts"
-	        	renderLeftButton={() => <Text>Back</Text>}
+	        	renderBackButton={() => null}
 						onLeft={() => console.log('Left button!')}/>
 	      </Scene>
       </Router>

@@ -6,25 +6,11 @@ import {
   Text,
   View
 } from 'react-native';
-import ListItem from './components/listItem';
+import ListItem from '../components/listItem';
 import {Scene, Router} from 'react-native-router-flux';
 
 import * as firebase from "firebase";
-
-const APIKEY = "AIzaSyB-gqqdDosrWdWwPNPUpEkX1eL3ddM_PEM";
-const AUTHDOMAIN = "tilrcontacts.firebaseapp.com";
-const DATABASEURL = "https://tilrcontacts.firebaseio.com/";
-const STORAGEBUCKET = "tilrcontacts.appspot.com";
-
-const FIREBASECONFIG = {
-  apiKey: APIKEY,
-  authDomain: AUTHDOMAIN,
-  databaseURL: DATABASEURL,
-  storageBucket: STORAGEBUCKET
-}
-
-firebase.initializeApp(FIREBASECONFIG);
-
+import firbaseConfig from '../../public/credential';
 
 export default class Contacts extends Component {
 
@@ -62,7 +48,7 @@ export default class Contacts extends Component {
       return (
         <View style={styles.container}>
           {this.state.contacts.map((contact, i) => {
-            var avatar = require('./images/logo.png');
+            var avatar = require('../images/logo.png');
             return (
               <ListItem
                 key={i}
