@@ -24,10 +24,6 @@ export default class Login extends Component {
     this.login = this.login.bind(this);
   }
 
-  componentDidMount() {
-
-  }
-
   async login() {
     console.log(this.state.password, this.state.email);
     let email = this.state.email;

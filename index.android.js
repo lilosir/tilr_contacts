@@ -31,10 +31,10 @@ export default class Tilr_Contacts extends Component {
 	      <Scene key="root">
         	<Scene key="login" component={Login} title="Login"/>
         	<Scene 
-        		key="editContacts" 
-	        	initial={true} 
+        		key="editContacts"
 	        	component={EditContacts} title="EditContacts"/>
 	        <Scene 
+	        	initial={true} 
 	        	key="contacts" 
 	        	component={Contacts} 
 	        	title="Contacts"
