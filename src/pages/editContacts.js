@@ -6,16 +6,24 @@ import {
   Image,
   TextInput
 } from 'react-native';
+import {connect} from 'react-redux';
 
 import * as firebase from "firebase";
 
-export default class EditContacts extends Component{
+mapStateToProps = (state) => state;
+mapDispatchToProps = (dispatch) => ({
+	updateInfo: (updatedInfo, index) => {
+		dispatch({type:'update', payload: updatedInfo, index: index})
+	}
+})
+
+class EditContacts extends Component{
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			nameTextHeight: 0,
-			name: '',
+			name: '123',
 			number: '',
 			address: ''
 		}
@@ -24,105 +32,100 @@ export default class EditContacts extends Component{
 
 	async componentDidMount() {
 
-		let contactRefs = firebase.database().ref('contacts/'+this.props.index);
-		let details = await contactRefs.once('value');
-    details = details.val();
+		let {contacts} = this.props.reducers.contactsReducer;
+		let currentContact = contacts[this.props.index];
+		console.log(currentContact)
+		
+
+		// let contactRefs = firebase.database().ref('contacts/'+this.props.index);
+		// let details = await contactRefs.once('value');
+  //   details = details.val();
 
 		this.setState({
-			name: details.name,
-			number: details.number,
-			address: details.address,
+			name: currentContact.name,
+			number: currentContact.number,
+			address: currentContact.address,
 		})
-		// let contactRef = firebase.database().ref('contacts/'+this.props.name);
-
-		// contactRef.set({
-		// 	0: {
-		// 		name: 'Oliver Sheng',
-		// 		address: '127 Queen St',
-		// 		number: '6471234322'
-		// 	},
-		// 	1: {
-		// 		name: 'Jackie Chen',
-		// 		address: '312 King St',
-		// 		number: '6470010001'
-		// 	},
-		// 	2: {
-		// 		name: 'Russell Westbrook',
-		// 		address: '001 John Ave',
-		// 		number: '5470020002'
-		// 	}
-		// })
 	}
 
-	changeNumberOrAddress(event, item) {
+	async changeNumberOrAddress(event, item) {
+
+		let value = event.nativeEvent.text;
+		let height = event.nativeEvent.contentSize.height;
 
 		let obj = {};
-		obj[item] = event.nativeEvent.text;
-		console.log("obj", obj)
+		obj[item] = value;
 		if(item === 'name'){
 			this.setState({
-				nameTextHeight: event.nativeEvent.contentSize.height
+				nameTextHeight: height
 			})
 		}
 		this.setState(obj);
 
 		let contactRef = firebase.database().ref('contacts/' + this.props.index + '/' + item);
-		contactRef.set(event.nativeEvent.text);
-	}
-
-	requestServerChange(event, item) {
-		let contactRef = firebase.database().ref('contacts/' + this.props.index + '/' + item);
-		let obj = {}
-		obj[item] = event.nativeEvent.text;
-		contactRef.set(obj);
+		contactRef.set(value)
+		.then(() => {
+			console.log('Synchronization succeeded');
+			this.props.updateInfo(obj, this.props.index);
+		})
+	  .catch((error) => console.log('Synchronization failed'));
 	}
 
 	render() {
-		return(
-			<View style={styles.container}>
-				<View style={styles.view_avatar}>
-				<Image 
-					style={styles.avatar}
-					source={require('../images/logo.png')}/>
+		let {contacts} = this.props.reducers.contactsReducer;
+		let currentContact = contacts[this.props.index];
+
+		if(currentContact){
+			return(
+				<View style={styles.container}>
+					<View style={styles.view_avatar}>
+					<Image 
+						style={styles.avatar}
+						source={require('../images/logo.png')}/>
+					</View>
+
+					<View style={styles.view_name}>
+	          <TextInput 
+	          	multiline={true}
+	            style={[styles.input_name,{height: Math.max(40, this.state.nameTextHeight)}]}
+	            underlineColorAndroid='rgba(0,0,0,0)'
+	            onChange={(event) => this.changeNumberOrAddress(event, 'name')}
+	            value={this.state.name}/>
+	        </View>
+
+	        <View style={styles.view_contents}>
+	        	<View style={styles.content_name}>
+		        	<Text style={styles.txt}>Number: </Text>
+	        	</View>
+	        	<View style={styles.content_value}>
+		        	<TextInput
+			        	style={styles.txt}
+		            underlineColorAndroid='rgba(0,0,0,0)'
+		            onChange={(event) => this.changeNumberOrAddress(event, 'number')}
+		            value={this.state.number}/>
+		        </View>
+	        </View>
+
+	        <View style={styles.view_contents}>
+	        	<View style={styles.content_name}>
+		        	<Text style={styles.txt}>Address: </Text>
+	        	</View>
+	        	<View style={styles.content_value}>
+		        	<TextInput
+			        	style={styles.txt}
+		            underlineColorAndroid='rgba(0,0,0,0)'
+		            onChange={(event) => this.changeNumberOrAddress(event, 'address')}
+		            value={this.state.address}/>
+		        </View>
+	        </View>
+
 				</View>
+			)			
+		}
 
-				<View style={styles.view_name}>
-          <TextInput 
-          	multiline={true}
-            style={[styles.input_name,{height: Math.max(40, this.state.nameTextHeight)}]}
-            underlineColorAndroid='rgba(0,0,0,0)'
-            onChange={(event) => this.changeNumberOrAddress(event, 'name')}
-            value={this.state.name}/>
-        </View>
-
-        <View style={styles.view_contents}>
-        	<View style={styles.content_name}>
-	        	<Text style={styles.txt}>Number: </Text>
-        	</View>
-        	<View style={styles.content_value}>
-	        	<TextInput
-		        	style={styles.txt}
-	            underlineColorAndroid='rgba(0,0,0,0)'
-	            onChange={(event) => this.changeNumberOrAddress(event, 'number')}
-	            value={this.state.number}/>
-	        </View>
-        </View>
-
-        <View style={styles.view_contents}>
-        	<View style={styles.content_name}>
-	        	<Text style={styles.txt}>Address: </Text>
-        	</View>
-        	<View style={styles.content_value}>
-	        	<TextInput
-		        	style={styles.txt}
-	            underlineColorAndroid='rgba(0,0,0,0)'
-	            onChange={(event) => this.changeNumberOrAddress(event, 'address')}
-	            value={this.state.address}/>
-	        </View>
-        </View>
-
-			</View>
-		)
+		return (
+      <Text> Loading ... </Text>
+    )
 	}
 }
 
@@ -169,3 +172,5 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditContacts);

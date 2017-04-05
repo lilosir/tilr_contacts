@@ -4,25 +4,32 @@ import {
   Text,
   View,
   ScrollView,
+  Button,
 } from 'react-native';
 import ListItem from '../components/listItem';
 import {Actions} from 'react-native-router-flux';
+import {connect} from 'react-redux';
 
 import * as firebase from "firebase";
 
-export default class Contacts extends Component {
+mapStateToProps = (state) => state; 
+
+mapDispatchToProps = (dispatch) => ({
+  getAll: (contacts) => {
+    dispatch({type:'getAll', payload: contacts})
+  }
+})
+
+class Contacts extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      contacts: [],
-    }
     this.editContacts = this.editContacts.bind(this)
   }
 
   async componentDidMount() {
 
-    console.log("DFDTHTHRGFGS")
+    console.log("props: ", this.props)
     let contactRefs = firebase.database().ref('contacts');
 
     let contactlist = await contactRefs.once('value');
@@ -36,10 +43,14 @@ export default class Contacts extends Component {
       obj.index = contact;
       lists.push(obj)
     }
-    this.setState({contacts: lists})
+    this.setState({contacts: lists});
 
-    console.log("!!!: ", contactsList);
-    console.log("123: ", this.state.contacts);
+    this.props.getAll(lists);
+
+    let {contacts} = this.props.reducers.contactsReducer;
+
+    console.log("!!!: ", contacts);
+    // console.log("123: ", this.state.contacts);
 
     // contactRefs.on('value', snapshot => {
     //   let contactsList = snapshot.val();
@@ -75,11 +86,12 @@ export default class Contacts extends Component {
   }
 
   render() {
-    if(this.state.contacts.length !== 0) {
+    let {contacts} = this.props.reducers.contactsReducer;
+    if(contacts.length !== 0) {
       return (
         <ScrollView style={styles.container}>
-          {this.state.contacts.map((contact, i) => {
-            let avatar = require('../images/logo.png');
+          {contacts.map((contact, i) => {
+            // let avatar = require('../images/logo.png');
             return (
               <ListItem
                 key={i}
@@ -107,3 +119,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(Contacts);
