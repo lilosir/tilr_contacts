@@ -1,11 +1,11 @@
-export default function reducer(state = {contacts:[]}, action) {
-	let contacts = { ...state.contacts };
+export default function reducer(originalState = {contacts:[]}, action) {
 	let type = action.type;
 	let id = action.id;
+	let contacts = { ...originalState.contacts };
+	let state = Object.assign({}, originalState);
 
 	switch(type) {
 		case 'getAll':
-			console.log("in reducer get all")
 			let contacts = action.payload;
 			state.contacts = contacts;
 			return state;

@@ -79,10 +79,6 @@ class Contacts extends Component {
     this.props.getAll(result);
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log("new props come! ", nextProps)
-  }
-
   mySortFirst(arr){
     return arr.sort((a, b) => {
       let valA = a.name.split(' ')[0];
