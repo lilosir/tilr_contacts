@@ -8,8 +8,11 @@ import {
 	AppRegistry, 
   StyleSheet,
   Text,
+  View,
+  TouchableOpacity
 } from 'react-native';
-import { Scene, Router} from 'react-native-router-flux';
+import { Icon } from 'react-native-material-design';
+import { Actions, Scene, Router} from 'react-native-router-flux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -19,6 +22,7 @@ import reducers from './public/reducers';
 import Contacts from './src/pages/contacts';
 import Login from './src/pages/login';
 import EditContacts from './src/pages/editContacts';
+import NewContact from './src/pages/newContact';
 
 
 import * as firebase from "firebase";
@@ -43,12 +47,18 @@ export default class Tilr_Contacts extends Component {
 	        	<Scene 
 	        		key="editContacts"
 		        	component={EditContacts} title="EditContacts"/>
-		        <Scene 
-		        	initial={true} 
+		        <Scene
+	        		key="newContact"
+		        	component={NewContact} title="NewContact"/>
+		        <Scene
+			        initial={true}
+		        	component={Contacts}
 		        	key="contacts" 
-		        	component={Contacts} 
 		        	title="Contacts"
-		        	renderBackButton={() => null}/>
+							renderRightButton={() => 
+		        		(<TouchableOpacity onPress={Actions.newContact}>
+        					<Icon name={"add"} color="#bbb" size={20}/>
+          			</TouchableOpacity>)}/>
 		      </Scene>
 	      </RouterWithRedux>
       </Provider>

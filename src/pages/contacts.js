@@ -17,6 +17,9 @@ mapStateToProps = (state) => state;
 mapDispatchToProps = (dispatch) => ({
   getAll: (contacts) => {
     dispatch({type:'getAll', payload: contacts})
+  },
+  reorder: () => {
+    dispatch({type: 'change'})
   }
 })
 
@@ -24,7 +27,8 @@ class Contacts extends Component {
 
   constructor(props) {
     super(props);
-    this.editContacts = this.editContacts.bind(this)
+    this.editContacts = this.editContacts.bind(this);
+    this.reorder = this.reorder.bind(this);
   }
 
   async componentDidMount() {
@@ -40,38 +44,20 @@ class Contacts extends Component {
       obj.name = contactsList[contact].name;
       obj.address = contactsList[contact].address;
       obj.number = contactsList[contact].number;
-      obj.index = contact;
+      obj.id = contactsList[contact].id;
       lists.push(obj)
     }
-    this.setState({contacts: lists});
 
+    lists = this.mySortFirst(lists)
     this.props.getAll(lists);
 
     let {contacts} = this.props.reducers.contactsReducer;
 
     console.log("!!!: ", contacts);
-    // console.log("123: ", this.state.contacts);
-
-    // contactRefs.on('value', snapshot => {
-    //   let contactsList = snapshot.val();
-    //   let lists = [];
-    //   for(let contact in contactsList) {
-    //     let obj = {};
-    //     obj.name = contact;
-    //     obj.address = contactsList[contact].address;
-    //     obj.number = contactsList[contact].number;
-    //     lists.push(obj)
-    //   }
-    //   this.setState({contacts: lists})
-
-    //   console.log("!!: ", contactsList);
-    //   console.log("123: ", this.state.contacts);
-    // });
 
     let storage = firebase.storage();
     let pathReference = storage.ref('avatar');
-    pathReference.child('image.jpg').getDownloadURL().then(function(url) {
-
+    pathReference.child('logo.png').getDownloadURL().then(function(url) {
       // Or inserted into an <img> element:
       console.log("URL", url)
       this.setState({avatar: url})
@@ -82,27 +68,68 @@ class Contacts extends Component {
   }
 
   editContacts(i) {
-    Actions.editContacts({index: i});
+    Actions.editContacts({id: i});
+  }
+
+  reorder() {
+    this.props.reorder();
+    let {contacts} = this.props.reducers.contactsReducer;
+    let firstOrder = this.props.reducers.orderReducer.firstOrder;
+    let result = firstOrder ? this.mySortFirst(contacts) : this.mySortLast(contacts);
+    this.props.getAll(result);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log("new props come! ", nextProps)
+  }
+
+  mySortFirst(arr){
+    return arr.sort((a, b) => {
+      let valA = a.name.split(' ')[0];
+      let valB = b.name.split(' ')[0];
+      if(valA > valB) return 1;
+      if(valA < valB) return -1;
+      return 0;
+    })
+  }
+
+  mySortLast(arr){
+    return arr.sort((a, b) => {
+      let valA = a.name.split(' ')[1] || "";
+      let valB = b.name.split(' ')[1] || "";
+      if(valA > valB) return 1;
+      if(valA < valB) return -1;
+      return 0;
+    })
   }
 
   render() {
     let {contacts} = this.props.reducers.contactsReducer;
+    console.log("here::::: ", contacts)
     if(contacts.length !== 0) {
       return (
-        <ScrollView style={styles.container}>
-          {contacts.map((contact, i) => {
-            // let avatar = require('../images/logo.png');
-            return (
-              <ListItem
-                key={i}
-                name={contact.name}
-                number={contact.number}
-                avatarSource={{uri: this.state.avatar}}
-                onPress={()=>this.editContacts(contact.index)}/>
-            )
-          })}
-          
-        </ScrollView>
+        <View  style={styles.container}>
+          <View style={styles.btn_add}>
+            <Button
+              onPress={() => this.reorder()}
+              title="Reorder"
+              color="#33cc33"/>
+          </View>
+          <ScrollView>
+            {contacts.map((contact, i) => {
+              let avatar = require('../images/logo.png');
+              return (
+                <ListItem
+                  key={i}
+                  name={contact.name}
+                  number={contact.number}
+                  avatarSource={avatar}
+                  onPress={()=>this.editContacts(contact.id)}/>
+              )
+            })}
+            
+          </ScrollView>
+        </View>
       );
     }
 
@@ -118,6 +145,9 @@ const styles = StyleSheet.create({
     marginTop: 55,
     backgroundColor: '#F5FCFF',
   },
+  btn_add: {
+    margin: 10,
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Contacts);

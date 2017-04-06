@@ -5,7 +5,7 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableOpacity ,
+  TouchableOpacity,
   Image,
 } from 'react-native';
 import {Icon} from 'react-native-material-design';

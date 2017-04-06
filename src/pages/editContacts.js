@@ -4,16 +4,23 @@ import {
   Text,
   View,
   Image,
-  TextInput
+  TextInput,
+  Button,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {Actions} from 'react-native-router-flux';
 
 import * as firebase from "firebase";
 
 mapStateToProps = (state) => state;
 mapDispatchToProps = (dispatch) => ({
-	updateInfo: (updatedInfo, index) => {
-		dispatch({type:'update', payload: updatedInfo, index: index})
+	removeOne: (id) => {
+		console.log("remove")
+		dispatch({type: 'remove', id: id})
+	},
+	updateInfo: (updatedInfo, id) => {
+		console.log("update")
+		dispatch({type:'update', payload: updatedInfo, id: id})
 	}
 })
 
@@ -23,23 +30,28 @@ class EditContacts extends Component{
 		super(props);
 		this.state = {
 			nameTextHeight: 0,
-			name: '123',
+			name: '',
 			number: '',
 			address: ''
 		}
 		this.changeNumberOrAddress = this.changeNumberOrAddress.bind(this);
+		this.deleteContact = this.deleteContact.bind(this)
 	}
 
 	async componentDidMount() {
 
-		let {contacts} = this.props.reducers.contactsReducer;
-		let currentContact = contacts[this.props.index];
-		console.log(currentContact)
-		
+		console.log("Props!!!: ", this.props)
 
-		// let contactRefs = firebase.database().ref('contacts/'+this.props.index);
+		let {contacts} = this.props.reducers.contactsReducer;
+		let currentContact = contacts.filter((element) => {
+			if(element.id === this.props.id){
+				return element;
+			}
+		})[0];
+
+		// let contactRefs = firebase.database().ref('contacts/'+this.props.id);
 		// let details = await contactRefs.once('value');
-  //   details = details.val();
+		// details = details.val();
 
 		this.setState({
 			name: currentContact.name,
@@ -62,18 +74,33 @@ class EditContacts extends Component{
 		}
 		this.setState(obj);
 
-		let contactRef = firebase.database().ref('contacts/' + this.props.index + '/' + item);
+		let contactRef = firebase.database().ref('contacts/' + this.props.id + '/' + item);
 		contactRef.set(value)
 		.then(() => {
 			console.log('Synchronization succeeded');
-			this.props.updateInfo(obj, this.props.index);
+			this.props.updateInfo(obj, this.props.id);
+		})
+	  .catch((error) => console.log('Synchronization failed'));
+	}
+
+	deleteContact(id) {
+		let contactRef = firebase.database().ref('contacts/' + this.props.id);
+		contactRef.remove()
+		.then(() => {
+			console.log('Synchronization succeeded');
+			this.props.removeOne(id);
+			Actions.contacts();
 		})
 	  .catch((error) => console.log('Synchronization failed'));
 	}
 
 	render() {
 		let {contacts} = this.props.reducers.contactsReducer;
-		let currentContact = contacts[this.props.index];
+		let currentContact = contacts.filter((element) => {
+			if(element.id === this.props.id){
+				return element;
+			}
+		})[0];
 
 		if(currentContact){
 			return(
@@ -118,7 +145,10 @@ class EditContacts extends Component{
 		            value={this.state.address}/>
 		        </View>
 	        </View>
-
+	        <Button
+					  onPress={() => this.deleteContact(this.props.id)}
+					  title="Delete"
+					  color="#ff0000"/>
 				</View>
 			)			
 		}
