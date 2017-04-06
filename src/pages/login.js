@@ -25,38 +25,17 @@ export default class Login extends Component {
   }
 
   async login() {
-    console.log(this.state.password, this.state.email);
     let email = this.state.email;
     let password = this.state.password;
     
     try{
       const auth = await firebase.auth().signInWithEmailAndPassword(email, password);
 
-      // firebase.auth().onAuthStateChanged(function(user) {
-      //   if (user) {
-      //     // User is signed in.
-      //     console.log("!@#!@#!@#", user);
-      //     this.setState({error: ""})
-      //     Actions.contacts();
-      //   } else {
-      //     // No user is signed in.
-      //     console.log("logged out")
-      //   }
-      // }.bind(this));
       let user = firebase.auth().currentUser;
       if (user) {
         // User is signed in.
-        console.log("!@#!@#!@#", user);
         this.setState({error: ""})
         Actions.contacts();
-        // var displayName = user.displayName;
-        // var email = user.email;
-        // var emailVerified = user.emailVerified;
-        // var photoURL = user.photoURL;
-        // var isAnonymous = user.isAnonymous;
-        // var uid = user.uid;
-        // var providerData = user.providerData;
-        // ...
       } else {
         console.log("logged out")
       }

@@ -31,7 +31,6 @@ export default function reducer(originalState = {contacts:[]}, action) {
 			})[0];
 
 			state.contacts.splice(index, 1);
-			console.log("reducer", state.contacts)
 			return state;
 		default: 
 			return state;

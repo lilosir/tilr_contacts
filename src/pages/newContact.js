@@ -30,7 +30,6 @@ class NewContact extends Component {
 
 	componentDidMount() {
 		const ID = guid();
-		console.log("ID: ", ID);
 		this.setState({
 			id:ID
 		});

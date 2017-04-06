@@ -15,11 +15,9 @@ import * as firebase from "firebase";
 mapStateToProps = (state) => state;
 mapDispatchToProps = (dispatch) => ({
 	removeOne: (id) => {
-		console.log("remove")
 		dispatch({type: 'remove', id: id})
 	},
 	updateInfo: (updatedInfo, id) => {
-		console.log("update")
 		dispatch({type:'update', payload: updatedInfo, id: id})
 	}
 })
@@ -39,8 +37,6 @@ class EditContacts extends Component{
 	}
 
 	async componentDidMount() {
-
-		console.log("Props!!!: ", this.props)
 
 		let {contacts} = this.props.reducers.contactsReducer;
 		let currentContact = contacts.filter((element) => {

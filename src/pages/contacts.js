@@ -33,7 +33,6 @@ class Contacts extends Component {
 
   async componentDidMount() {
 
-    console.log("props: ", this.props)
     let contactRefs = firebase.database().ref('contacts');
 
     let contactlist = await contactRefs.once('value');
@@ -53,13 +52,10 @@ class Contacts extends Component {
 
     let {contacts} = this.props.reducers.contactsReducer;
 
-    console.log("!!!: ", contacts);
-
     let storage = firebase.storage();
     let pathReference = storage.ref('avatar');
     pathReference.child('logo.png').getDownloadURL().then(function(url) {
       // Or inserted into an <img> element:
-      console.log("URL", url)
       this.setState({avatar: url})
     }.bind(this)).catch(function(error) {
       // Handle any errors
@@ -101,7 +97,6 @@ class Contacts extends Component {
 
   render() {
     let {contacts} = this.props.reducers.contactsReducer;
-    console.log("here::::: ", contacts)
     if(contacts.length !== 0) {
       return (
         <View  style={styles.container}>

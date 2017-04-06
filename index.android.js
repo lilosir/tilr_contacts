@@ -43,7 +43,11 @@ export default class Tilr_Contacts extends Component {
 					navigationBarStyle={styles.naviBar}
 					titleStyle={styles.title}>
 		      <Scene key="root">
-	        	<Scene key="login" component={Login} title="Login"/>
+	        	<Scene 
+			        initial={true} 
+	        		key="login"
+			        component={Login} 
+			        title="Login"/>
 	        	<Scene 
 	        		key="editContacts"
 		        	component={EditContacts} title="EditContacts"/>
@@ -51,7 +55,6 @@ export default class Tilr_Contacts extends Component {
 	        		key="newContact"
 		        	component={NewContact} title="NewContact"/>
 		        <Scene
-			        initial={true}
 		        	component={Contacts}
 		        	key="contacts" 
 		        	title="Contacts"
