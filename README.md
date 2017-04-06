@@ -4,6 +4,6 @@
 
 2. Enter the file dir, npm install.
 
-3. Start an emulator.
+3. Start an Android emulator.
 
 4. type "react-native run-android".
